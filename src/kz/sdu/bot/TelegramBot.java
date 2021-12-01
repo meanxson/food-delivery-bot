@@ -1,15 +1,22 @@
 package kz.sdu.bot;
 
-import kz.sdu.information.Information;
+import kz.sdu.delivery.FoodDelivery;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import kz.sdu.information.Information;
 import kz.sdu.account.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class TelegramBot extends TelegramLongPollingBot {
     List<User> users = new ArrayList<>();
+    FoodDelivery foodDelivery = new FoodDelivery();
 
     @Override
     public String getBotUsername() {
@@ -27,18 +34,42 @@ public class TelegramBot extends TelegramLongPollingBot {
         final Long ID = update.getMessage().getChat().getId();
         final String text = update.getMessage().getText();
         authUsers(username, ID);
-        // We check if the update has a message and the message has text
         if (update.hasMessage() && update.getMessage().hasText()) {
-            SendMessage message = new SendMessage();
             if (text.equals("/start")) {
-                message.setChatId(update.getMessage().getChatId().toString());
-                message.setText(Information.getStartInform(username));
-                try {
-                    execute(message);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+                sendCustomKeyboard(
+                        update.getMessage().getChatId().toString(),
+                        username
+                );
             }
+
+        }
+    }
+
+    public void sendCustomKeyboard(String chatId, String username) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(Information.getStartInform(username) + "\nChoose food:");
+
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+
+        row.add("Burger");
+        row.add("Beverages");
+        row.add("Fries");
+        keyboard.add(row);
+
+        row = new KeyboardRow();
+        row.add("Calculate final Price");
+        row.add("Exit");
+        keyboard.add(row);
+
+        keyboardMarkup.setKeyboard(keyboard);
+        message.setReplyMarkup(keyboardMarkup);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 

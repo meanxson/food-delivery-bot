@@ -1,8 +1,6 @@
 package kz.sdu.account;
 
-import kz.sdu.account.delivery.ITrade;
-
-public class User extends Person implements ITrade {
+public class User extends Person  {
     private String username;
     private final Long ID;
 

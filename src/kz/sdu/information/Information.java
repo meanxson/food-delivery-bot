@@ -5,6 +5,21 @@ import java.util.Scanner;
 
 public class Information {
 
+    public static String readFile(String path) {
+        String data = "";
+        try {
+            Scanner reader = new Scanner(new File(path));
+            while (reader.hasNextLine()) {
+                data = reader.nextLine();
+            }
+            reader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        return data;
+    }
+
     public static String getStartInform(String username) {
         String data = "Error";
         try {
