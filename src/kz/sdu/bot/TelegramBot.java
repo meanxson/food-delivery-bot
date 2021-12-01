@@ -35,7 +35,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void authUsers(String username, Long ID) {
         if (!users.isEmpty())
             for (User user : users)
-                if (user.getID().equals(ID)) return;
+                if (user.getID().equals(ID)) {
+                    if (!user.getUsername().equals(username))
+                        user.setUsername(username);
+                    return;
+                }
         users.add(new User(username, ID));
     }
 }
