@@ -2,11 +2,18 @@ package kz.sdu.account;
 
 import kz.sdu.account.delivery.ITrade;
 
-public class User implements ITrade {
+public class User extends Person implements ITrade {
     private String username;
     private final Long ID;
 
     public User(String username, Long ID) {
+        super("", "");
+        this.username = username;
+        this.ID = ID;
+    }
+
+    public User(String username, Long ID, String name, String surname) {
+        super(name, surname);
         this.username = username;
         this.ID = ID;
     }
@@ -22,4 +29,13 @@ public class User implements ITrade {
     public Long getID() {
         return ID;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                ", ID=" + ID +
+                '}';
+    }
+
 }
