@@ -54,14 +54,24 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
 
-        row.add("Burger");
-        row.add("Beverages");
-        row.add("Fries");
+        List<String> categories = foodDelivery.getCategories();
+        int count = 0;
+        for (String category : categories) {
+            if (count < 3) {
+                row.add(category);
+            } else break;
+            count++;
+        }
         keyboard.add(row);
-
         row = new KeyboardRow();
-        row.add("Calculate final Price");
-        row.add("Exit");
+        count = 0;
+        for (int i = 0; i < categories.size(); i++) {
+            String category = categories.get(i + 3);
+            if (count < 3) {
+                row.add(category);
+            } else break;
+            count++;
+        }
         keyboard.add(row);
 
         keyboardMarkup.setKeyboard(keyboard);

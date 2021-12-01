@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FoodDelivery implements ITrade {
-    List<String> categories = new ArrayList<>();
-    List<List<String>> subcategories = new ArrayList<>();
+    private List<String> categories = new ArrayList<>();
+    private List<List<String>> subcategories = new ArrayList<>();
 
     public FoodDelivery() {
         {
@@ -49,22 +49,30 @@ public class FoodDelivery implements ITrade {
     }
 
     @Override
-    public void add() {
+    public void add(String item) {
 
     }
 
     @Override
-    public void remove() {
+    public void remove(int index) {
 
     }
 
     @Override
-    public void change() {
+    public void change(String item, String toItem) {
 
     }
 
     @Override
     public void total() {
 
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public List<List<String>> getSubcategories() {
+        return subcategories;
     }
 }
