@@ -3,9 +3,14 @@ package kz.sdu.bot;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import kz.sdu.account.User;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TelegramBot extends TelegramLongPollingBot {
+    List<User> users = new ArrayList<>();
+
     @Override
     public String getBotUsername() {
         return "fooood_delivery_bot";
@@ -18,17 +23,19 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        String username = update.getMessage().getChat().getUserName();
+        final Long ID = update.getMessage().getChat().getId();
+        authUsers(username, ID);
         // We check if the update has a message and the message has text
         if (update.hasMessage() && update.getMessage().hasText()) {
-            SendMessage message = new SendMessage(); // Create a SendMessage object with mandatory fields
-            message.setChatId(update.getMessage().getChatId().toString());
-            message.setText(update.getMessage().getText());
 
-            try {
-                execute(message); // Call method to send the message
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
         }
+    }
+
+    public void authUsers(String username, Long ID) {
+        if (!users.isEmpty())
+            for (User user : users)
+                if (user.getID().equals(ID)) return;
+        users.add(new User(username, ID));
     }
 }
