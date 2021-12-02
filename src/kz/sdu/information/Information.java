@@ -1,6 +1,9 @@
 package kz.sdu.information;
 
+import javax.validation.constraints.NotNull;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Information {
@@ -36,19 +39,32 @@ public class Information {
         return editText(data, username);
     }
 
-    //FIXME fix name
     public static String editText (String text, String username) {
-        String data = "";
+        StringBuilder data = new StringBuilder();
         while (!text.isEmpty()) {
             if (text.contains("\\n")) {
-                data += text.substring(0, text.indexOf("\\n")) + "\n";
+                data.append(text, 0, text.indexOf("\\n")).append("\n");
                 text = text.substring(text.indexOf("\\n") + 2);
             } else {
-                data += text;
+                data.append(text);
                 text = "";
             }
         }
-        data = data.replace("@username", "@" + username);
+        data = new StringBuilder(data.toString().replace("@username", "@" + username));
+        return data.toString();
+    }
+
+    public static List<String> getList(@NotNull String s, @NotNull String divisor) {
+        List<String> data = new ArrayList<>();
+        while (!s.isEmpty()) {
+            if (s.contains(divisor)) {
+                data.add(s.substring(0, s.indexOf(divisor)));
+                s = s.substring(s.indexOf(divisor) + divisor.length());
+            } else {
+                data.add(s);
+                s = "";
+            }
+        }
         return data;
     }
 }

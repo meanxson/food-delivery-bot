@@ -1,14 +1,13 @@
 package kz.sdu.delivery;
 
-import kz.sdu.account.delivery.ITrade;
 import kz.sdu.information.Information;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FoodDelivery implements ITrade {
-    private List<String> categories = new ArrayList<>();
-    private List<List<String>> subcategories = new ArrayList<>();
+    private final List<String> categories = new ArrayList<>();
+    private final List<List<String>> subcategories = new ArrayList<>();
 
     public FoodDelivery() {
         {
@@ -42,10 +41,10 @@ public class FoodDelivery implements ITrade {
                     temp.add(category);
                 } else {
                     this.subcategories.add(temp);
+                    temp = new ArrayList<>();
                 }
             }
         }
-
     }
 
     @Override

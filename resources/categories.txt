@@ -1,1 +1,1 @@
-Burger, Beverages, Fries, Calculate final Price
+Burger, Beverages, Fries, Calculate final Price, Exit
