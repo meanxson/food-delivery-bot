@@ -1,4 +1,4 @@
-package kz.sdu.account.delivery;
+package kz.sdu.delivery;
 
 public interface ITrade {
     void add(String item);

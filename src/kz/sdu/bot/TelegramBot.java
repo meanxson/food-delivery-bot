@@ -13,6 +13,7 @@ import kz.sdu.account.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TelegramBot extends TelegramLongPollingBot {
     List<User> users = new ArrayList<>();
@@ -46,10 +47,29 @@ public class TelegramBot extends TelegramLongPollingBot {
                 if (foodDelivery.getCategories().get(i).equalsIgnoreCase(text)) {
                     sendCustomKeyboard(
                             update.getMessage().getChatId().toString(),
-                            username,
                             "subcategories",
                             i
                     );
+                    break;
+                }
+            }
+            for (int i = 0; i < foodDelivery.getCategories().size(); i++) {
+                for (String item : foodDelivery.getSubcategories().get(i)) {
+                    if (item.equals(text)) {
+                        // search user in users
+                        for (User user : users) {
+                            if (Objects.equals(user.getID(), ID)) {
+                                user.addToBasket(item);
+                                break;
+                            }
+                        }
+                        sendCustomKeyboard(
+                                update.getMessage().getChatId().toString(),
+                                username,
+                                "categories"
+                        );
+                        break;
+                    }
                 }
             }
         }
@@ -62,15 +82,16 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         List<String> list;
 
-        switch (resources) {
-            case "categories" -> list = foodDelivery.getCategories();
-            default -> list = new ArrayList<>();
+        if ("categories".equals(resources)) {
+            list = foodDelivery.getCategories();
+        } else {
+            list = new ArrayList<>();
         }
 
         sendCustomKeyboard(message,  list);
     }
 
-    public void sendCustomKeyboard(String chatId, String username, String resources, int indexResources) {
+    public void sendCustomKeyboard(String chatId, String resources, int indexResources) {
         SendMessage message = new SendMessage();
         List<String> list;
 
@@ -82,7 +103,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else {
             list = new ArrayList<>();
         }
-
         sendCustomKeyboard(message, list);
     }
 
@@ -98,6 +118,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                     } else {
                         keyboard.add(row);
                         row = new KeyboardRow();
+                        row.add(list.get(i));
+                        if (i % 3 == 0) {
+                            keyboard.add(row);
+                        }
                         count = 0;
                     }
                 }
