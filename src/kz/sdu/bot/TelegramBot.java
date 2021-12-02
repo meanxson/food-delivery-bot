@@ -39,11 +39,50 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (text.equals("/start")) {
                 sendCustomKeyboard(
                         update.getMessage().getChatId().toString(),
+                        Information.getStartInform(username) + "\nChoose food:",
                         username,
                         "categories"
                 );
             }
-            for (int i = 0; i < foodDelivery.getCategories().size(); i++) {
+
+            if (text.equalsIgnoreCase("Calculate final Price")) {
+                StringBuilder order = new StringBuilder("Your Order:\n");
+                for (User user : users) {
+                    if (Objects.equals(user.getID(), ID)) {
+                        for (String item : user.getBasket()) {
+                            order.append(item).append("\n");
+                        }
+                        order.append("Total price: ").append(user.getTotalBasketCost()).append(" tg\n");
+                        order.append("Your Order Will be Delivered\nbye");
+                        break;
+                    }
+                }
+                sendCustomKeyboard(
+                        update.getMessage().getChatId().toString(),
+                        order.toString(),
+                        username,
+                        ""
+                );
+            }
+            for (int i = 0; i < foodDelivery.getCategories().size() - 2; i++) {
+                if (foodDelivery.getCategories().get(i).equalsIgnoreCase("Exit")) {
+                    int totalCost = 0;
+                    for (User user : users) {
+                        if (Objects.equals(user.getID(), ID)) {
+                            totalCost = user.getTotalBasketCost();
+                            break;
+                        }
+                    }
+                    String textMessage = "Your order is cancelled\n" +
+                                  "Total price - " + totalCost + " tg";
+                    sendCustomKeyboard(
+                            update.getMessage().getChatId().toString(),
+                            textMessage,
+                            username,
+                            "categories"
+                    );
+                    break;
+                }
                 if (foodDelivery.getCategories().get(i).equalsIgnoreCase(text)) {
                     sendCustomKeyboard(
                             update.getMessage().getChatId().toString(),
@@ -53,7 +92,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     break;
                 }
             }
-            for (int i = 0; i < foodDelivery.getCategories().size(); i++) {
+            for (int i = 0; i < foodDelivery.getCategories().size() - 2; i++) {
                 for (String item : foodDelivery.getSubcategories().get(i)) {
                     if (item.equals(text)) {
                         // search user in users
@@ -65,6 +104,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         }
                         sendCustomKeyboard(
                                 update.getMessage().getChatId().toString(),
+                                "Choose food:",
                                 username,
                                 "categories"
                         );
@@ -75,10 +115,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendCustomKeyboard(String chatId, String username, String resources) {
+    public void sendCustomKeyboard(String chatId, String text, String username, String resources) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText(Information.getStartInform(username) + "\nChoose food:");
+        message.setText(text);
 
         List<String> list;
 
