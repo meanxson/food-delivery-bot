@@ -39,7 +39,7 @@ public class User extends Person {
 
     /**
      * Example text:
-     * Burger | Chicken Burger - 1000 tg.
+     * Chicken Burger - 1000 tg.
      */
     public void addToBasket(String item) {
         this.basket.add(item);

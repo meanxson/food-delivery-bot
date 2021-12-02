@@ -31,9 +31,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        final String username = update.getMessage().getChat().getUserName();
+        String username = update.getMessage().getChat().getUserName();
         final Long ID = update.getMessage().getChat().getId();
         final String text = update.getMessage().getText();
+        if (username == null) {
+            username = "Person";
+        }
         authUsers(username, ID);
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (text.equals("/start")) {
@@ -75,6 +78,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 for (User user : users) {
                     if (Objects.equals(user.getID(), ID)) {
                         totalCost = user.getTotalBasketCost();
+                        user.clearBasket();
                         break;
                     }
                 }
@@ -86,34 +90,35 @@ public class TelegramBot extends TelegramLongPollingBot {
                         username,
                         "categories"
                 );
-            }
-            for (int i = 0; i < foodDelivery.getCategories().size() - 2; i++) {
-                if (foodDelivery.getCategories().get(i).equalsIgnoreCase(text)) {
-                    sendCustomKeyboard(
-                            update.getMessage().getChatId().toString(),
-                            "subcategories",
-                            i
-                    );
-                    break;
-                }
-            }
-            for (int i = 0; i < foodDelivery.getCategories().size() - 2; i++) {
-                for (String item : foodDelivery.getSubcategories().get(i)) {
-                    if (item.equals(text)) {
-                        // search user in users
-                        for (User user : users) {
-                            if (Objects.equals(user.getID(), ID)) {
-                                user.addToBasket(item);
-                                break;
-                            }
-                        }
+            } else {
+                for (int i = 0; i < foodDelivery.getCategories().size() - 2; i++) {
+                    if (foodDelivery.getCategories().get(i).equalsIgnoreCase(text)) {
                         sendCustomKeyboard(
                                 update.getMessage().getChatId().toString(),
-                                "Choose food:",
-                                username,
-                                "categories"
+                                "subcategories",
+                                i
                         );
                         break;
+                    }
+                }
+                for (int i = 0; i < foodDelivery.getCategories().size() - 2; i++) {
+                    for (String item : foodDelivery.getSubcategories().get(i)) {
+                        if (item.equals(text)) {
+                            // search user in users
+                            for (User user : users) {
+                                if (Objects.equals(user.getID(), ID)) {
+                                    user.addToBasket(item);
+                                    break;
+                                }
+                            }
+                            sendCustomKeyboard(
+                                    update.getMessage().getChatId().toString(),
+                                    "Choose food:",
+                                    username,
+                                    "categories"
+                            );
+                            break;
+                        }
                     }
                 }
             }
@@ -190,8 +195,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (!users.isEmpty())
             for (User user : users)
                 if (user.getID().equals(ID)) {
-                    if (!user.getUsername().equals(username))
+                    if (!user.getUsername().equals(username)) {
                         user.setUsername(username);
+                    }
                     return;
                 }
         users.add(new User(username, ID));
