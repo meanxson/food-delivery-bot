@@ -1,1 +1,1 @@
-Chicken Burger - 600 tg, Beef Burger - 800 tg, Exit, next, Coke - 200, Sprite - 200, Fanta - 200, Exit, next, Fries - 450, next
+Chicken Burger - 600 tg, Beef Burger - 800 tg, Exit, next, Coke - 200 tg, Sprite - 200 tg, Fanta - 200 tg, Exit, next, Fries - 450 tg, next

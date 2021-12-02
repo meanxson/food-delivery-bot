@@ -7,6 +7,7 @@ public class User extends Person {
     private String username;
     private final Long ID;
     private final List<String> basket = new ArrayList<>();
+    private int totalBasketCost = 0;
 
     public User(String username, Long ID) {
         super("", "");
@@ -42,6 +43,13 @@ public class User extends Person {
      */
     public void addToBasket(String item) {
         this.basket.add(item);
+        int start = item.indexOf("- ") + 2,
+                end = item.indexOf(" tg");
+        totalBasketCost += Integer.parseInt(item.substring(start, end));
+    }
+
+    public int getTotalBasketCost() {
+        return totalBasketCost;
     }
 
     @Override
