@@ -37,6 +37,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         authUsers(username, ID);
         if (update.hasMessage() && update.getMessage().hasText()) {
             if (text.equals("/start")) {
+                for (User user : users) {
+                    if (Objects.equals(user.getID(), ID)) {
+                        user.clearBasket();
+                        break;
+                    }
+                }
                 sendCustomKeyboard(
                         update.getMessage().getChatId().toString(),
                         Information.getStartInform(username) + "\nChoose food:",
@@ -64,25 +70,24 @@ public class TelegramBot extends TelegramLongPollingBot {
                         ""
                 );
             }
-            for (int i = 0; i < foodDelivery.getCategories().size() - 2; i++) {
-                if (foodDelivery.getCategories().get(i).equalsIgnoreCase("Exit")) {
-                    int totalCost = 0;
-                    for (User user : users) {
-                        if (Objects.equals(user.getID(), ID)) {
-                            totalCost = user.getTotalBasketCost();
-                            break;
-                        }
+            if (text.equalsIgnoreCase("Exit")) {
+                int totalCost = 0;
+                for (User user : users) {
+                    if (Objects.equals(user.getID(), ID)) {
+                        totalCost = user.getTotalBasketCost();
+                        break;
                     }
-                    String textMessage = "Your order is cancelled\n" +
-                                  "Total price - " + totalCost + " tg";
-                    sendCustomKeyboard(
-                            update.getMessage().getChatId().toString(),
-                            textMessage,
-                            username,
-                            "categories"
-                    );
-                    break;
                 }
+                String textMessage = "Your order is cancelled\n" +
+                                     "Total price - " + totalCost + " tg";
+                sendCustomKeyboard(
+                        update.getMessage().getChatId().toString(),
+                        textMessage,
+                        username,
+                        "categories"
+                );
+            }
+            for (int i = 0; i < foodDelivery.getCategories().size() - 2; i++) {
                 if (foodDelivery.getCategories().get(i).equalsIgnoreCase(text)) {
                     sendCustomKeyboard(
                             update.getMessage().getChatId().toString(),
