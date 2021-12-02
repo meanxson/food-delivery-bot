@@ -6,7 +6,7 @@ import java.util.List;
 public class User extends Person {
     private String username;
     private final Long ID;
-    private final List<String> basket = new ArrayList<>();
+    private List<String> basket = new ArrayList<>();
     private int totalBasketCost = 0;
 
     public User(String username, Long ID) {
@@ -50,6 +50,11 @@ public class User extends Person {
 
     public int getTotalBasketCost() {
         return totalBasketCost;
+    }
+
+    public void clearBasket() {
+        basket = new ArrayList<>();
+        totalBasketCost = 0;
     }
 
     @Override
