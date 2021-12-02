@@ -38,44 +38,78 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (text.equals("/start")) {
                 sendCustomKeyboard(
                         update.getMessage().getChatId().toString(),
-                        username
+                        username,
+                        "categories"
                 );
             }
-
+            for (int i = 0; i < foodDelivery.getCategories().size(); i++) {
+                if (foodDelivery.getCategories().get(i).equalsIgnoreCase(text)) {
+                    sendCustomKeyboard(
+                            update.getMessage().getChatId().toString(),
+                            username,
+                            "subcategories",
+                            i
+                    );
+                }
+            }
         }
     }
 
-    public void sendCustomKeyboard(String chatId, String username) {
+    public void sendCustomKeyboard(String chatId, String username, String resources) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(Information.getStartInform(username) + "\nChoose food:");
 
+        List<String> list;
+
+        switch (resources) {
+            case "categories" -> list = foodDelivery.getCategories();
+            default -> list = new ArrayList<>();
+        }
+
+        sendCustomKeyboard(message,  list);
+    }
+
+    public void sendCustomKeyboard(String chatId, String username, String resources, int indexResources) {
+        SendMessage message = new SendMessage();
+        List<String> list;
+
+        message.setChatId(chatId);
+        message.setText("Please, choose " + foodDelivery.getCategories().get(indexResources).toLowerCase());
+
+        if ("subcategories".equals(resources)) {
+            list = foodDelivery.getSubcategories().get(indexResources);
+        } else {
+            list = new ArrayList<>();
+        }
+
+        sendCustomKeyboard(message, list);
+    }
+
+    private void sendCustomKeyboard(SendMessage message, List<String> list) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
 
-        List<String> categories = foodDelivery.getCategories();
-        int count = 0;
-        for (String category : categories) {
-            if (count < 3) {
-                row.add(category);
-            } else break;
-            count++;
-        }
-        keyboard.add(row);
-        row = new KeyboardRow();
-        count = 0;
-        for (int i = 0; i < categories.size(); i++) {
-            String category = categories.get(i + 3);
-            if (count < 3) {
-                row.add(category);
-            } else break;
-            count++;
-        }
-        keyboard.add(row);
-
+            if (list.size() > 3) {
+                for (int i = 0, count = 0; i < list.size(); i++) {
+                    if (count++ < 3) {
+                        row.add(list.get(i));
+                    } else {
+                        keyboard.add(row);
+                        row = new KeyboardRow();
+                        count = 0;
+                    }
+                }
+            } else {
+                for (String s : list) {
+                    row.add(s);
+                }
+                keyboard.add(row);
+            }
         keyboardMarkup.setKeyboard(keyboard);
         message.setReplyMarkup(keyboardMarkup);
+
         try {
             execute(message);
         } catch (TelegramApiException e) {
